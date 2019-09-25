@@ -29,7 +29,7 @@ vex::competition Competition;
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
-void pre_auton( void ) {
+void pre_auton( void ) {//this runs before the auton
   
   vex::motor rightrear (vex::PORT10, vex::gearSetting::ratio18_1, true);
   vex::motor leftrear (vex::PORT9, vex::gearSetting::ratio18_1, true);
@@ -49,34 +49,35 @@ void pre_auton( void ) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void autonomous( void ) {
+void autonomous( void ) {//this runs without human interaction
   
+  //init motors and sensors
   vex::motor rightrear (vex::PORT10, vex::gearSetting::ratio18_1, true);
   vex::motor leftrear (vex::PORT9, vex::gearSetting::ratio18_1, true);
   vex::motor leftfront (vex::PORT7, vex::gearSetting::ratio18_1, true);
   vex::motor rightfront (vex::PORT8, vex::gearSetting::ratio18_1, true);
   vex::vision visionsensor (vex::PORT20);
-  vex::controller controller1 = vex::controller();
+  //vex::controller controller1 = vex::controller();// this code does nothing
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  while(true){
-    visionsensor.takeSnapshot(1);
-    int fwd = 0;
+  while(true){//loop forever
+    visionsensor.takeSnapshot(1);//record pic
+    int fwd = 0;//init vars 
     int sts = 0;
     int rtn = 50;
     Brain.Screen.clearScreen();
-    Brain.Screen.print("width:");
-    Brain.Screen.print(visionsensor.largestObject.width);
-    Brain.Screen.print("center X:");
-    Brain.Screen.print(visionsensor.largestObject.centerX);
-    if (visionsensor.largestObject.exists && visionsensor.largestObject.width>5) {
-      rtn= (visionsensor.largestObject.centerX/3)-53;
-      if((visionsensor.largestObject.centerX/3)-53<5){
-        if(visionsensor.largestObject.width>30){
-         fwd=3000/visionsensor.largestObject.width;
-         if(fwd<30){
-           fwd=0;
+    Brain.Screen.print("width:");//line1
+    Brain.Screen.print(visionsensor.largestObject.width);//line2
+    Brain.Screen.print("center X:");//line3
+    Brain.Screen.print(visionsensor.largestObject.centerX);//line4
+    if (visionsensor.largestObject.exists && visionsensor.largestObject.width>5) {//if the biggest object is bigger and 5 pixels wide
+      rtn= (visionsensor.largestObject.centerX/3)-53;//turn the ammount of center
+      if((visionsensor.largestObject.centerX/3)-53<5){//if its less than 5 pixels off 
+        if(visionsensor.largestObject.width<100){//and if the width is lessthan than 100 pixels
+         fwd=3000/visionsensor.largestObject.width;//do this move fwd inverse propotionaly to the size
+         if(fwd<30){//and if fwd speed if less that 30%
+           fwd=0;// just dont move
          }
         }
       }
@@ -85,7 +86,7 @@ void autonomous( void ) {
       //this_thread::sleep_for(10);
       
        
-    }
+    }//move acording to the vars set up earlier
     rightrear.spin(vex::directionType::fwd,  2*(fwd+sts-rtn),vex::velocityUnits::rpm);
     leftrear.spin(vex::directionType::fwd,   2*(-rtn-sts-fwd),vex::velocityUnits::rpm);
     rightfront.spin(vex::directionType::fwd, 2*(fwd-sts-rtn),vex::velocityUnits::rpm);
@@ -110,6 +111,7 @@ void usercontrol( void ) {
   vex::motor leftrear (vex::PORT9, vex::gearSetting::ratio18_1, true);
   vex::motor leftfront (vex::PORT7, vex::gearSetting::ratio18_1, true);
   vex::motor rightfront (vex::PORT8, vex::gearSetting::ratio18_1, true);
+  vex::motor tipper (vex::PORT19, vex::gearSetting::ratio18_1, true);
   // User control code here, inside the loop
   while (1) {
     // This is the main execution loop for the user control program.
@@ -151,5 +153,5 @@ int main() {
     while(1) {
       vex::task::sleep(100);//Sleep the task for a short amount of time to prevent wasted resources.
     }    
-       
-}
+      
+} 
